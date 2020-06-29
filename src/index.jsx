@@ -1,14 +1,12 @@
 import React from "react";
 import ReactDOM from "react-dom";
 import "./index.css";
-import Q from "./cosmo_short_Bmaj9.wav";
+import { Q, W, E, A, S, D, Z, X, C } from "./samples";
 
+// DRUMPAD CLASS
 class DrumPad extends React.Component {
   constructor(props) {
     super(props);
-    this.state = {
-      active: false,
-    };
     this.audio = React.createRef();
     this.playClip = this.playClip.bind(this);
   }
@@ -19,25 +17,25 @@ class DrumPad extends React.Component {
   }
 
   shouldComponentUpdate(nextProps, nextState) {
-    if (nextProps.keyPressed == "q") {
+    if (nextProps.keyPressed == this.props.id) {
       this.playClip();
     }
     return nextProps.keyPressed == "q";
   }
 
   render() {
-    const id = "Q";
     return (
-      <div className="drum-pad" id={id} onMouseDown={this.playClip}>
-        Q{" "}
-        <audio ref={this.audio} className="clip" id={id}>
-          <source src={Q} />
+      <div className="drum-pad" id={this.props.id} onMouseDown={this.playClip}>
+        {this.props.id}
+        <audio ref={this.audio} className="clip">
+          <source src={this.props.audio} />
         </audio>
       </div>
     );
   }
 }
 
+//MASTER MACHINE CLASS
 class Machine extends React.Component {
   constructor(props) {
     super(props);
@@ -52,7 +50,8 @@ class Machine extends React.Component {
   }
 
   onKeyDown(e) {
-    this.setState({ keyPressed: e.key });
+    const key = e.key.toLowerCase();
+    this.setState({ keyPressed: key });
     console.log(this.state.keyPressed);
   }
 
@@ -60,11 +59,30 @@ class Machine extends React.Component {
     return (
       <div id="drum-machine">
         <div id="display"></div>
-        <DrumPad keyPressed={this.state.keyPressed} />
+        {sources.map((e) => (
+          <DrumPad
+            keyPressed={this.state.keyPressed}
+            id={e.id}
+            audio={e.audio}
+          />
+        ))}
       </div>
     );
   }
 }
+
+//AUDIO SOURCES
+const sources = [
+  { id: "q", audio: Q },
+  { id: "w", audio: W },
+  { id: "e", audio: E },
+  { id: "a", audio: A },
+  { id: "s", audio: S },
+  { id: "d", audio: D },
+  { id: "z", audio: Z },
+  { id: "x", audio: X },
+  { id: "c", audio: C },
+];
 
 // ========================================
 
