@@ -8,28 +8,41 @@ class DrumPad extends React.Component {
   constructor(props) {
     super(props);
     this.audio = React.createRef();
-    this.playClip = this.playClip.bind(this);
+    this.clickPlay = this.clickPlay.bind(this);
+    this.keyPlay = this.keyPlay.bind(this);
   }
 
-  playClip() {
+  clickPlay() {
+    this.audio.current.currentTime = 0;
+    this.audio.current.play();
+    this.props.handleClick(this.props.id);
+  }
+
+  keyPlay() {
     this.audio.current.currentTime = 0;
     this.audio.current.play();
   }
 
+  componentDidUpdate() {
+    console.log(this.props.id + " updated!!!");
+    this.keyPlay();
+  }
+
   shouldComponentUpdate(nextProps, nextState) {
-    if (nextProps.keyPressed == this.props.id) {
-      this.playClip();
-    }
-    return nextProps.keyPressed == "q";
+    return nextProps.keyPressed === this.props.id;
   }
 
   render() {
+    const currentId = this.props.id;
     return (
-      <div className="drum-pad" id={this.props.id} onMouseDown={this.playClip}>
-        {this.props.id}
-        <audio ref={this.audio} className="clip">
-          <source src={this.props.audio} />
-        </audio>
+      <div className="drum-pad" id={currentId} onMouseDown={this.clickPlay}>
+        {currentId.toUpperCase()}
+        <audio
+          ref={this.audio}
+          className="clip"
+          src={this.props.audio}
+          id={currentId.toUpperCase()}
+        />
       </div>
     );
   }
@@ -41,8 +54,10 @@ class Machine extends React.Component {
     super(props);
     this.state = {
       keyPressed: "asd",
+      display: "q",
     };
     this.onKeyDown = this.onKeyDown.bind(this);
+    this.handleClick = this.handleClick.bind(this);
   }
 
   componentDidMount() {
@@ -51,19 +66,25 @@ class Machine extends React.Component {
 
   onKeyDown(e) {
     const key = e.key.toLowerCase();
-    this.setState({ keyPressed: key });
-    console.log(this.state.keyPressed);
+    this.setState({ keyPressed: key, display: key });
+  }
+
+  handleClick(e) {
+    this.setState({ display: e });
   }
 
   render() {
+    const displayObj = sources.filter(e=>e.id==this.state.display);
+    const displayText = displayObj[0].name;
     return (
       <div id="drum-machine">
-        <div id="display"></div>
+        <div id="display">{displayText}</div>
         {sources.map((e) => (
           <DrumPad
             keyPressed={this.state.keyPressed}
             id={e.id}
             audio={e.audio}
+            handleClick={this.handleClick}
           />
         ))}
       </div>
@@ -73,15 +94,15 @@ class Machine extends React.Component {
 
 //AUDIO SOURCES
 const sources = [
-  { id: "q", audio: Q },
-  { id: "w", audio: W },
-  { id: "e", audio: E },
-  { id: "a", audio: A },
-  { id: "s", audio: S },
-  { id: "d", audio: D },
-  { id: "z", audio: Z },
-  { id: "x", audio: X },
-  { id: "c", audio: C },
+  { id: "q", name: "Kick Drum 1", audio: Q },
+  { id: "w", name: "Kick Drum 2", audio: W },
+  { id: "e", name: "Kick Drum 3", audio: E },
+  { id: "a", name: "Snare 1", audio: A },
+  { id: "s", name: "Snare 2", audio: S },
+  { id: "d", name: "Snare 3", audio: D },
+  { id: "z", name: "High Hat", audio: Z },
+  { id: "x", name: "High Hat Big", audio: X },
+  { id: "c", name: "High Hat Small", audio: C },
 ];
 
 // ========================================
