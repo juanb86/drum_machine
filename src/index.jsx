@@ -74,19 +74,27 @@ class Machine extends React.Component {
   }
 
   render() {
-    const displayObj = sources.filter(e=>e.id==this.state.display);
+    const displayObj = sources.filter((e) => e.id == this.state.display);
     const displayText = displayObj[0].name;
     return (
       <div id="drum-machine">
-        <div id="display">{displayText}</div>
-        {sources.map((e) => (
-          <DrumPad
-            keyPressed={this.state.keyPressed}
-            id={e.id}
-            audio={e.audio}
-            handleClick={this.handleClick}
-          />
-        ))}
+        <h1 id="title">DRUM MACHINE</h1>
+        <div id="drum-container">
+          <div id="pads">
+            {sources.map((e) => (
+              <DrumPad
+                keyPressed={this.state.keyPressed}
+                id={e.id}
+                audio={e.audio}
+                handleClick={this.handleClick}
+              />
+            ))}
+          </div>
+          <div id="display-container">
+            <h3>Current Sample</h3>
+            <div id="display">{displayText}</div>
+          </div>
+        </div>
       </div>
     );
   }
